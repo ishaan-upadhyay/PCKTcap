@@ -43,14 +43,6 @@ void packet_handler(unsigned char *user_data, const struct pcap_pkthdr *pkthdr, 
         pcap_dump(reinterpret_cast<u_char *>(meta->dumper), pkthdr, packet);
     };
 
-    std::cout << "Packet captured: length " << pkthdr->len << std::endl;
-    std::cout << "Packet content:" << std::endl;
-    for (unsigned int i = 0; i < pkthdr->len; ++i)
-    {
-        printf("%02x ", packet[i]);
-    }
-    std::cout << std::endl;
-
     std::unique_ptr<Layer> base = nullptr;
     try
     {
@@ -64,7 +56,16 @@ void packet_handler(unsigned char *user_data, const struct pcap_pkthdr *pkthdr, 
 
         if (base)
         {
-            std::cout << base->toJson().dump(4) << std::endl;
+            nlohmann::json j = base->toJson();
+            j["capturedAt"] = pkthdr->ts.tv_sec;
+            std::cout << j.dump(4) << std::endl;
+
+            /* To avoid cluttering output, add the raw packet only at serialization time */
+            j["rawPacket"] = nlohmann::json::array();
+            for (unsigned int i = 0; i < pkthdr->len; ++i)
+            {
+                j["rawPacket"].push_back(packet[i]);
+            }
         }
     } catch (std::runtime_error &e)
     {

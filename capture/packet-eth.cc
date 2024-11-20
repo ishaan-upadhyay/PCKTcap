@@ -46,10 +46,10 @@ void EthernetFrame::print()
 nlohmann::json EthernetFrame::toJson()
 {
     nlohmann::json j;
-    j["type"] = "EthernetFrame";
-    j["destination"] = destination;
-    j["source"] = source;
-    j["type"] = type;
+    j["type"] = "Ethernet";
+    j["destination"] = byte_stream_to_mac_string(destination, 6);
+    j["source"] = byte_stream_to_mac_string(source, 6);
+    j["encapsulatedType"] = type;
 
     if (nextLayer)
     {
@@ -61,17 +61,14 @@ nlohmann::json EthernetFrame::toJson()
 
 std::unique_ptr<Layer> EthernetFrame::next_layer_parse(const unsigned char *packet, int length, int type)
 {
-    if (type == 0x0800)
+    switch (type)
     {
+    case 0x0800:
         return nullptr;
         // TODO: return std::make_unique<IPv4Packet>(packet);
-    }
-    else if (type == 0x0806)
-    {
+    case 0x0806:
         return std::make_unique<ARPFrame>(packet, length);
-    }
-    else
-    {
+    default:
         return nullptr;
     }
 }

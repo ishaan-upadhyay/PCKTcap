@@ -21,6 +21,7 @@ ARPFrame::ARPFrame(const unsigned char *buf, int length)
     std::copy(buf + 14, buf + 18, senderProtocolAddress);
     std::copy(buf + 18, buf + 24, targetHardwareAddress);
     std::copy(buf + 24, buf + 28, targetProtocolAddress);
+    nextLayer = nullptr;
 };
 
 void ARPFrame::print()
@@ -47,15 +48,15 @@ void ARPFrame::print()
 
 nlohmann::json ARPFrame::toJson() {
     nlohmann::json j;
-    j["type"] = "ARPFrame";
+    j["type"] = "ARP";
     j["hardwareType"] = hardwareType;
     j["protocolType"] = protocolType;
     j["hardwareAddressLength"] = hardwareAddressLength;
     j["protocolAddressLength"] = protocolAddressLength;
     j["operation"] = operation;
-    j["senderHardwareAddress"] = senderHardwareAddress;
+    j["senderHardwareAddress"] = byte_stream_to_mac_string(senderHardwareAddress, 6);
     j["senderProtocolAddress"] = senderProtocolAddress;
-    j["targetHardwareAddress"] = targetHardwareAddress;
+    j["targetHardwareAddress"] = byte_stream_to_mac_string(targetHardwareAddress, 6);
     j["targetProtocolAddress"] = targetProtocolAddress;
 
     return j;
