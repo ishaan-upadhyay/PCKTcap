@@ -15,7 +15,6 @@ public:
     unsigned char targetHardwareAddress[6];
     unsigned char targetProtocolAddress[4];
     ARPFrame(const unsigned char *buf, int length);
-    void print() override;
     bsoncxx::builder::basic::document toBson() override;
 };
 

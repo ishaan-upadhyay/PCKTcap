@@ -24,28 +24,6 @@ ARPFrame::ARPFrame(const unsigned char *buf, int length)
     nextLayer = nullptr;
 };
 
-void ARPFrame::print()
-{
-    std::cout << "ARP frame\n";
-    std::cout << "Hardware type: " << hardwareType << "\n";
-    std::cout << "Protocol type: " << protocolType << "\n";
-    std::cout << "Hardware address length: " << hardwareAddressLength << "\n";
-    std::cout << "Protocol address length: " << protocolAddressLength << "\n";
-    std::cout << "Operation: " << operation << "\n";
-    std::cout << "Sender hardware address: ";
-    print_byte_stream(senderHardwareAddress, 6);
-    std::cout << "\n";
-    std::cout << "Sender protocol address: ";
-    print_byte_stream(senderProtocolAddress, 4);
-    std::cout << "\n";
-    std::cout << "Target hardware address: ";
-    print_byte_stream(targetHardwareAddress, 6);
-    std::cout << "\n";
-    std::cout << "Target protocol address: ";
-    print_byte_stream(targetProtocolAddress, 4);
-    std::cout << "\n";
-}
-
 bsoncxx::builder::basic::document ARPFrame::toBson()
 {
     bsoncxx::builder::basic::document doc;

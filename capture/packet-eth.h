@@ -17,7 +17,6 @@ class EthernetFrame : public Layer
         uint16_t type; /* 16-bit protocol type identifier. */
         EthernetFrame(const unsigned char *buf, const struct pcap_pkthdr *header);
         ~EthernetFrame();
-        void print() override;
         bsoncxx::builder::basic::document toBson() override;
     private:
         std::unique_ptr<Layer> next_layer_parse(const unsigned char *packet, int length, int type);

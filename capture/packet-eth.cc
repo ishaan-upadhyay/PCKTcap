@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include <pcap/pcap.h>
 
+#include "packet-ipv4.h"
 #include "packet-arp.h"
 #include "packet-eth.h"
 #include "../utils/pcktcap_util.h"
@@ -28,21 +29,6 @@ EthernetFrame::~EthernetFrame()
     }
 }
 
-void EthernetFrame::print()
-{
-    std::cout << "Ethernet frame\n";
-    std::cout << "Destination: ";
-    print_byte_stream(destination, 6);
-    std::cout << "Source: ";
-    print_byte_stream(source, 6);
-    std::cout << "Type: " << type << std::endl;
-
-    if (nextLayer)
-    {
-        nextLayer->print();
-    }
-}
-
 bsoncxx::builder::basic::document EthernetFrame::toBson()
 {
     bsoncxx::builder::basic::document doc;
@@ -63,8 +49,7 @@ std::unique_ptr<Layer> EthernetFrame::next_layer_parse(const unsigned char *pack
     switch (type)
     {
     case 0x0800:
-        return nullptr;
-        // TODO: return std::make_unique<IPv4Packet>(packet);
+        return std::make_unique<IPV4Frame>(packet, length);
     case 0x0806:
         return std::make_unique<ARPFrame>(packet, length);
     default:

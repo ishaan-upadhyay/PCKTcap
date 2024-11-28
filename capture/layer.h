@@ -8,7 +8,6 @@ class Layer
 {
 public:
     std::unique_ptr<Layer> nextLayer;
-    virtual void print() = 0;
     virtual bsoncxx::builder::basic::document toBson() = 0;
 };
 
