@@ -74,7 +74,8 @@ void packet_handler(unsigned char *user_data, const struct pcap_pkthdr *pkthdr, 
         if (base)
         {
             bsoncxx::builder::basic::document doc = base->toBson();
-            doc.append(bsoncxx::builder::basic::kvp("timestamp", pkthdr->ts.tv_sec));
+            /* Get full microsecond level granularity. */
+            doc.append(bsoncxx::builder::basic::kvp("timestamp", pkthdr->ts.tv_sec * 1000000 + pkthdr->ts.tv_usec));
 
             std::cout << bsoncxx::to_json(doc.view()) << std::endl;
 
