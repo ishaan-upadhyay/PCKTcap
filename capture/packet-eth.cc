@@ -46,6 +46,7 @@ void EthernetFrame::print()
 bsoncxx::builder::basic::document EthernetFrame::toBson()
 {
     bsoncxx::builder::basic::document doc;
+    doc.append(bsoncxx::builder::basic::kvp("layerType", "Ethernet"));
     doc.append(bsoncxx::builder::basic::kvp("destination", byte_stream_to_mac_string(destination, 6)));
     doc.append(bsoncxx::builder::basic::kvp("source", byte_stream_to_mac_string(source, 6)));
     doc.append(bsoncxx::builder::basic::kvp("type", type));

@@ -6,10 +6,26 @@
 #include <signal.h>
 #include <stdexcept>
 #include <bsoncxx/json.hpp>
+#include <mongocxx/client.hpp>
+#include <mongocxx/instance.hpp>
+#include <mongocxx/uri.hpp>
 
 #include "packet-eth.h"
 
 pcap_t *handle;
+
+/* Set up MongoDB connection */
+const std::string DB_URL = "mongodb://localhost:27017";
+
+mongocxx::instance instance;
+mongocxx::uri uri(DB_URL);
+mongocxx::client client(uri);
+
+auto database = client["PCKTcap"];
+
+/* Set up new collection based on timestamp */
+time_t now = time(NULL);
+auto collection = database["cap_" + std::to_string(now)];
 
 /* Structure to pass around required metadata for the packet handler */
 struct handler_metadata
@@ -61,6 +77,8 @@ void packet_handler(unsigned char *user_data, const struct pcap_pkthdr *pkthdr, 
             doc.append(bsoncxx::builder::basic::kvp("timestamp", pkthdr->ts.tv_sec));
 
             std::cout << bsoncxx::to_json(doc.view()) << std::endl;
+
+            collection.insert_one(doc.view());
         }
     } catch (std::runtime_error &e)
     {

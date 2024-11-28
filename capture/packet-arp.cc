@@ -49,6 +49,7 @@ void ARPFrame::print()
 bsoncxx::builder::basic::document ARPFrame::toBson()
 {
     bsoncxx::builder::basic::document doc;
+    doc.append(bsoncxx::builder::basic::kvp("layerType", "ARP"));
     doc.append(bsoncxx::builder::basic::kvp("hardwareType", hardwareType));
     doc.append(bsoncxx::builder::basic::kvp("protocolType", protocolType));
     doc.append(bsoncxx::builder::basic::kvp("hardwareAddressLength", hardwareAddressLength));
