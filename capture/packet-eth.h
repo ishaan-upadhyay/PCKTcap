@@ -14,11 +14,11 @@ class EthernetFrame : public Layer
     public:
         unsigned char destination[6]; /* 48-bit destination MAC address */
         unsigned char source[6]; /* 48-bit source MAC address */
-        unsigned short type; /* 16-bit protocol type identifier. */
+        uint16_t type; /* 16-bit protocol type identifier. */
         EthernetFrame(const unsigned char *buf, const struct pcap_pkthdr *header);
         ~EthernetFrame();
         void print() override;
-        nlohmann::json toJson() override;
+        bsoncxx::builder::basic::document toBson() override;
     private:
         std::unique_ptr<Layer> next_layer_parse(const unsigned char *packet, int length, int type);
 };

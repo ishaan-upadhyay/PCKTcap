@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <stdexcept>
+#include <bsoncxx/json.hpp>
 
 #include "packet-eth.h"
 
@@ -56,16 +57,10 @@ void packet_handler(unsigned char *user_data, const struct pcap_pkthdr *pkthdr, 
 
         if (base)
         {
-            nlohmann::json j = base->toJson();
-            j["capturedAt"] = pkthdr->ts.tv_sec;
-            std::cout << j.dump(4) << std::endl;
+            bsoncxx::builder::basic::document doc = base->toBson();
+            doc.append(bsoncxx::builder::basic::kvp("timestamp", pkthdr->ts.tv_sec));
 
-            /* To avoid cluttering output, add the raw packet only at serialization time */
-            j["rawPacket"] = nlohmann::json::array();
-            for (unsigned int i = 0; i < pkthdr->len; ++i)
-            {
-                j["rawPacket"].push_back(packet[i]);
-            }
+            std::cout << bsoncxx::to_json(doc.view()) << std::endl;
         }
     } catch (std::runtime_error &e)
     {

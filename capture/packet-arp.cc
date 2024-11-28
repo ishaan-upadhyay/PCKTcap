@@ -3,7 +3,7 @@
 
 #include "packet-arp.h"
 #include "../utils/pcktcap_util.h"
-#include "../dependencies/json.hpp"
+#include <bsoncxx/json.hpp>
 
 ARPFrame::ARPFrame(const unsigned char *buf, int length)
 {
@@ -46,18 +46,18 @@ void ARPFrame::print()
     std::cout << "\n";
 }
 
-nlohmann::json ARPFrame::toJson() {
-    nlohmann::json j;
-    j["type"] = "ARP";
-    j["hardwareType"] = hardwareType;
-    j["protocolType"] = protocolType;
-    j["hardwareAddressLength"] = hardwareAddressLength;
-    j["protocolAddressLength"] = protocolAddressLength;
-    j["operation"] = operation;
-    j["senderHardwareAddress"] = byte_stream_to_mac_string(senderHardwareAddress, 6);
-    j["senderProtocolAddress"] = senderProtocolAddress;
-    j["targetHardwareAddress"] = byte_stream_to_mac_string(targetHardwareAddress, 6);
-    j["targetProtocolAddress"] = targetProtocolAddress;
+bsoncxx::builder::basic::document ARPFrame::toBson()
+{
+    bsoncxx::builder::basic::document doc;
+    doc.append(bsoncxx::builder::basic::kvp("hardwareType", hardwareType));
+    doc.append(bsoncxx::builder::basic::kvp("protocolType", protocolType));
+    doc.append(bsoncxx::builder::basic::kvp("hardwareAddressLength", hardwareAddressLength));
+    doc.append(bsoncxx::builder::basic::kvp("protocolAddressLength", protocolAddressLength));
+    doc.append(bsoncxx::builder::basic::kvp("operation", operation));
+    doc.append(bsoncxx::builder::basic::kvp("senderHardwareAddress", byte_stream_to_mac_string(senderHardwareAddress, 6)));
+    doc.append(bsoncxx::builder::basic::kvp("senderProtocolAddress", byte_stream_to_ip_string(senderProtocolAddress, 4)));
+    doc.append(bsoncxx::builder::basic::kvp("targetHardwareAddress", byte_stream_to_mac_string(targetHardwareAddress, 6)));
+    doc.append(bsoncxx::builder::basic::kvp("targetProtocolAddress", byte_stream_to_ip_string(targetProtocolAddress, 4)));
 
-    return j;
+    return doc;
 }

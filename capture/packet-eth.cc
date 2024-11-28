@@ -5,7 +5,7 @@
 #include "packet-arp.h"
 #include "packet-eth.h"
 #include "../utils/pcktcap_util.h"
-#include "../dependencies/json.hpp"
+#include <bsoncxx/builder/basic/kvp.hpp>   
 
 EthernetFrame::EthernetFrame(const unsigned char *buf, const struct pcap_pkthdr *header)
 {
@@ -43,20 +43,18 @@ void EthernetFrame::print()
     }
 }
 
-nlohmann::json EthernetFrame::toJson()
+bsoncxx::builder::basic::document EthernetFrame::toBson()
 {
-    nlohmann::json j;
-    j["type"] = "Ethernet";
-    j["destination"] = byte_stream_to_mac_string(destination, 6);
-    j["source"] = byte_stream_to_mac_string(source, 6);
-    j["encapsulatedType"] = type;
+    bsoncxx::builder::basic::document doc;
+    doc.append(bsoncxx::builder::basic::kvp("destination", byte_stream_to_mac_string(destination, 6)));
+    doc.append(bsoncxx::builder::basic::kvp("source", byte_stream_to_mac_string(source, 6)));
+    doc.append(bsoncxx::builder::basic::kvp("type", type));
 
     if (nextLayer)
     {
-        j["nextLayer"] = nextLayer->toJson();
+        doc.append(bsoncxx::builder::basic::kvp("nextLayer", nextLayer->toBson().extract()));
     }
-
-    return j;
+    return doc;
 }
 
 std::unique_ptr<Layer> EthernetFrame::next_layer_parse(const unsigned char *packet, int length, int type)
