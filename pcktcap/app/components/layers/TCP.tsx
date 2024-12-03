@@ -29,7 +29,8 @@ const TCP = ({ packet }: { packet: any }) => {
     ...packet, 
     flags: parsedFlags,
     sourcePort: `${packet.sourcePort} (${portNames[packet.sourcePort] || 'Unknown'})`,
-    destinationPort: `${packet.destinationPort} (${portNames[packet.destinationPort] || 'Unknown'})`
+    destinationPort: `${packet.destinationPort} (${portNames[packet.destinationPort] || 'Unknown'})`,
+    dataOffset: `${packet.dataOffset} (${packet.dataOffset * 4} bytes)`
   };
 
   return (

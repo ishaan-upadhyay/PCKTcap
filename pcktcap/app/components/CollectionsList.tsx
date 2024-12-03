@@ -5,7 +5,7 @@ const CollectionsList = async () => {
   const collections = await getCollections();
 
   // Sort collections in descending order of timestamp,
-  // names are formatted as cap_<time_since_epoch>
+  // names are formatted as cap_<time_since_epoch>_<interface>
   collections.sort((a, b) => parseInt(b.split('_')[1]) - parseInt(a.split('_')[1]));
 
   return (

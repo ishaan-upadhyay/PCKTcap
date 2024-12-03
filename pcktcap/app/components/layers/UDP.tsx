@@ -20,7 +20,6 @@ const UDP = ({ packet }: { packet: any }) => {
       case 'DNS':
         NextLayerComponent = DNS;
         break;
-      // ...existing code...
     }
   }
 
