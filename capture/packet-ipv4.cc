@@ -66,8 +66,7 @@ bsoncxx::builder::basic::document IPV4Frame::toBson()
 
 std::unique_ptr<Layer> IPV4Frame::next_layer_parse(const unsigned char *packet, int length, int protocol)
 {
-    // If not the first fragment, header for next layer
-    // should not be present.
+    /* If this is not the first fragment, we should not expect the next layer header. */
     if (offset != 0)
     {
         return nullptr;
@@ -75,11 +74,11 @@ std::unique_ptr<Layer> IPV4Frame::next_layer_parse(const unsigned char *packet, 
 
     switch (protocol)
     {
-    case 1: // ICMP protocol number
+    case 1:
         return std::make_unique<ICMPFrame>(packet, length);
-    case 6: // TCP protocol number
+    case 6:
         return std::make_unique<TCPFrame>(packet, length);
-    case 17: // UDP protocol number
+    case 17:
         return std::make_unique<UDPFrame>(packet, length);
     default:
         return nullptr;

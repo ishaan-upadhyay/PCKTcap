@@ -1,4 +1,5 @@
 #include "packet-udp.h"
+#include "packet-dns.h"
 #include "../utils/pcktcap_util.h"
 
 UDPFrame::UDPFrame(const unsigned char *buf, int length)
@@ -12,7 +13,7 @@ UDPFrame::UDPFrame(const unsigned char *buf, int length)
     destinationPort = (buf[2] << 8) | buf[3];
     this->length = (buf[4] << 8) | buf[5];
     checksum = (buf[6] << 8) | buf[7];
-    nextLayer = next_layer_parse(buf + 8, length - 8, 0);
+    nextLayer = next_layer_parse(buf + 8, length - 8, sourcePort, destinationPort);
 }
 
 UDPFrame::~UDPFrame()
@@ -39,7 +40,14 @@ bsoncxx::builder::basic::document UDPFrame::toBson()
     return doc;
 }
 
-std::unique_ptr<Layer> UDPFrame::next_layer_parse(const unsigned char *packet, int length, int protocol)
+std::unique_ptr<Layer> UDPFrame::next_layer_parse(const unsigned char *packet, int length, uint16_t sport, uint16_t dport)
 {
-    return nullptr; // No further layers for now
+    if (sport == 53 || dport == 53)
+    {
+        return std::make_unique<DNSFrame>(packet, length);
+    }
+    else
+    {
+        return nullptr;
+    }
 }

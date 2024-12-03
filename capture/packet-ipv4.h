@@ -8,6 +8,8 @@
 
  As a network-layer protocol, this class can contain further layers, such as TCP, UDP, etc.
  This makes an explicit destructor necessary to ensure that all layers are properly deallocated.
+ 
+ RFC: https://datatracker.ietf.org/doc/html/rfc791
  */
 class IPV4Frame : public Layer
 {

@@ -23,15 +23,16 @@ mongocxx::client client(uri);
 
 auto database = client["PCKTcap"];
 
-/* Set up new collection based on timestamp */
+/* Set up new collection based on timestamp. */
 time_t now = time(NULL);
 auto collection = database["cap_" + std::to_string(now)];
 
 /* Structure to pass around required metadata for the packet handler */
 struct handler_metadata
 {
-    pcap_dumper_t *dumper;
+    pcap_dumper_t *dumper; /* Used for logging to a .pcap file */
     int link_type; /* Used to determine initial parsing strategy. */
+    bool verbose; /* Enable verbose mode */
 };
 
 /* Capture exit signal, to gracefully end the pcap_loop. */
@@ -44,6 +45,13 @@ void signal_handler(int signum)
     }
 }
 
+/* The packet handler function registered to pcap_loop. 
+ * This function is called for each packet captured by pcap_loop.
+ * Arguments:
+ *  user_data wraps the handler_metadata struct.
+ *  pkthdr contains some metadata about the packet, like timestamp and length.
+ *  packet contains the raw packet data.
+ */
 void packet_handler(unsigned char *user_data, const struct pcap_pkthdr *pkthdr, const unsigned char *packet)
 {
     /* Sanity checks */
@@ -74,10 +82,11 @@ void packet_handler(unsigned char *user_data, const struct pcap_pkthdr *pkthdr, 
         if (base)
         {
             bsoncxx::builder::basic::document doc = base->toBson();
-            /* Get full microsecond level granularity. */
             doc.append(bsoncxx::builder::basic::kvp("timestamp", pkthdr->ts.tv_sec * 1000000 + pkthdr->ts.tv_usec));
 
-            std::cout << bsoncxx::to_json(doc.view()) << std::endl;
+            std::cout << "Captured packet of length " << pkthdr->len << std::endl;
+            if (meta->verbose)
+                std::cout << bsoncxx::to_json(doc.view()) << std::endl;
 
             collection.insert_one(doc.view());
         }
@@ -93,6 +102,8 @@ void print_usage()
     std::cout << "Options:\n";
     std::cout << "  -i <interface>  Interface to capture packets from (default: first available interface)\n";
     std::cout << "  -l <log_file>   Log file to write captured packets to (default: no logging)\n";
+    std::cout << "  -v              Enable verbose mode (parsed packet will be printed out.)\n";
+    std::cout << "  -p              Set interface to promiscuous mode\n";
     std::cout << "  -h              Display this help message" << std::endl;
 }
 
@@ -102,9 +113,11 @@ int main(int argc, char *argv[])
     pcap_if_t *alldevs;
     std::string interface;
     std::string log_file = "";
+    bool verbose = false;
+    int promisc = 0;
     int opt;
 
-    while ((opt = getopt(argc, argv, "i:l:h")) != -1)
+    while ((opt = getopt(argc, argv, "i:l:h:v")) != -1)
     {
         switch (opt)
         {
@@ -117,6 +130,12 @@ int main(int argc, char *argv[])
         case 'h':
             print_usage();
             return 0;
+        case 'v':
+            verbose = true;
+            break;
+        case 'p':
+            promisc = 1;
+            break;
         default:
             print_usage();
             return 1;
@@ -133,13 +152,15 @@ int main(int argc, char *argv[])
         interface = alldevs->name;
     }
 
-    handle = pcap_open_live(interface.c_str(), BUFSIZ, 1, 1000, errbuf);
+    /* Set a 1 second packet buffer timeout. */
+    handle = pcap_open_live(interface.c_str(), BUFSIZ, promisc, 1000, errbuf);
     if (handle == nullptr)
     {
         std::cerr << "Couldn't open device " << interface << ": " << errbuf << std::endl;
         return 1;
     }
 
+    /* The link layer header type. */
     int link_type = pcap_datalink(handle);
     std::cout << "Link type: " << pcap_datalink_val_to_name(link_type) << std::endl;
 
@@ -154,16 +175,19 @@ int main(int argc, char *argv[])
         }
     }
 
-    struct handler_metadata metadata = {dumper, link_type};
+    struct handler_metadata metadata = {dumper, link_type, verbose};
 
+    /* Register signal hander for usual CTRL+C kill. */
     signal(SIGINT, signal_handler);
     pcap_loop(handle, 0, packet_handler, reinterpret_cast<unsigned char *>(&metadata));
 
+    /* Clean up. */
     if (dumper)
     {
         pcap_dump_close(dumper);
     }
     pcap_close(handle);
+    pcap_freealldevs(alldevs);
 
     return 0;
 }

@@ -1,11 +1,8 @@
-import { getClient } from '../../data/Client';
+import { getPackets } from '@/data/Client';
 import Ethernet from './layers/Ethernet';
 
 const PacketsList = async ({ capture }: { capture: string }) => {
-  const client = await getClient();
-  const db = client.db('PCKTcap');
-  const collection = db.collection(capture);
-  const packets = await collection.find().sort({ timestamp: 1 }).toArray();
+  const packets = await getPackets(capture);
 
   if (packets.length === 0) {
     return <div className="p-5">No packets found.</div>;

@@ -30,8 +30,6 @@ TCPFrame::~TCPFrame()
 
 bsoncxx::builder::basic::document TCPFrame::toBson()
 {
-    std::cout << "TCPFrame::toBson()" << std::endl;
-
     bsoncxx::builder::basic::document doc;
     doc.append(bsoncxx::builder::basic::kvp("layerType", "TCP"));
     doc.append(bsoncxx::builder::basic::kvp("sourcePort", sourcePort));

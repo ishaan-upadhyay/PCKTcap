@@ -4,6 +4,11 @@
 
 #include "layer.h"
 
+/*
+ * TCPFrame is a class that represents the TCP header in a network packet.
+ * 
+ * RFC: https://datatracker.ietf.org/doc/html/rfc9293
+ */
 class TCPFrame : public Layer
 {
     public:
