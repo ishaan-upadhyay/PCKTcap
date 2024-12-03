@@ -12,17 +12,14 @@ sudo ./setup.sh
 This project has the following dependencies to build and run.
 
 ```bash
-sudo apt-get install libpcap-dev g++ make gnupg curl
+sudo apt-get install libpcap-dev g++ make gnupg curl cmake
 ```
 
 ## MongoDB
 
-We followed the official [MongoDB Community Edition Installation Guide](https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu/).
+We followed the official [MongoDB Community Edition Installation Guide](https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu/), plus the MongoDB C++ driver [installation guide](https://www.mongodb.com/docs/languages/cpp/cpp-driver/current/get-started/download-and-install/).
 
-We've included the following libraries within the repository itself (to keep things simple) - batteries included. See `dependencies` for included libraries.
-
-- [nlohmann/json](https://github.com/nlohmann/json) - JSON for Modern C++, v. 3.11.3
-
+```bash
 # Building
 
 Run `make` to build the project.

@@ -36,8 +36,6 @@ inline std::string byte_stream_to_ip_string(unsigned char *packet, int length) {
         ip << std::dec << static_cast<int>(packet[i]);
     }
     
-    std::cout << ip.str() << std::endl;
-
     return ip.str();
 }
 

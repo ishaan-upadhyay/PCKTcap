@@ -1,6 +1,8 @@
-
 #include "packet-ipv4.h"
 #include "../utils/pcktcap_util.h"
+// #include "packet-tcp.h"
+// #include "packet-udp.h"
+#include "packet-icmp.h"
 
 IPV4Frame::IPV4Frame(const unsigned char *buf, int length)
 {
@@ -62,10 +64,19 @@ bsoncxx::builder::basic::document IPV4Frame::toBson()
 
 std::unique_ptr<Layer> IPV4Frame::next_layer_parse(const unsigned char *packet, int length, int protocol)
 {
+    if ((flags & 0x1F) != 0) // Check if the packet is not the first fragment
+    {
+        return nullptr;
+    }
+
     switch (protocol)
     {
-    case 1:
-        return nullptr;
+    case 1: // ICMP protocol number
+        return std::make_unique<ICMPFrame>(packet, length);
+    case 6: // TCP protocol number
+        return nullptr; // std::make_unique<TCPFrame>(packet, length);
+    case 17: // UDP protocol number
+        return nullptr; // std::make_unique<UDPFrame>(packet, length);
     default:
         return nullptr;
     }
