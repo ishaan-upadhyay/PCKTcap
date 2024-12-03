@@ -17,7 +17,8 @@ class IPV4Frame : public Layer
         uint8_t dscp;
         uint16_t totalLength;
         uint16_t identification;
-        uint16_t flags;
+        uint8_t flags;
+        uint16_t offset;
         uint8_t ttl;
         uint8_t protocol;
         uint16_t checksum;

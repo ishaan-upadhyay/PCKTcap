@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import ICMP from './ICMP';
-import UDP from './UDP'; // Add this import
+import UDP from './UDP';
+import TCP from './TCP';
 
 const IPv4 = ({ packet }: { packet: any }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -23,6 +24,9 @@ const IPv4 = ({ packet }: { packet: any }) => {
         break;
       case 'UDP': // Add this case
         NextLayerComponent = UDP;
+        break;
+      case 'TCP': // Add this case
+        NextLayerComponent = TCP;
         break;
       // ...existing code...
     }
