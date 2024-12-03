@@ -11,7 +11,7 @@ The VM is available in the release section of the repository and is intended to 
 
 **The VM will NOT run on Windows if Hyper-V Virtualization is enabled**, as MongoDB > 5.0 requires the AVX instruction set, which is not compatible with Hyper-V. 
 
-To enable AVX pass-through in VirtualBox, go to settings for the VM, enable expert mode, check System > Processor, and enable PAE/NX and Nested VT-x/AMD-V.
+To enable AVX pass-through in VirtualBox, go to settings for the VM, enable expert mode, check System > Processor, and enable PAE/NX, the VM is confirmed to work with these settings on the lab machines.
 
 ---
 
