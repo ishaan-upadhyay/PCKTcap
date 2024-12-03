@@ -1,7 +1,7 @@
 #include "packet-ipv4.h"
 #include "../utils/pcktcap_util.h"
 // #include "packet-tcp.h"
-// #include "packet-udp.h"
+#include "packet-udp.h"
 #include "packet-icmp.h"
 
 IPV4Frame::IPV4Frame(const unsigned char *buf, int length)
@@ -76,7 +76,7 @@ std::unique_ptr<Layer> IPV4Frame::next_layer_parse(const unsigned char *packet, 
     case 6: // TCP protocol number
         return nullptr; // std::make_unique<TCPFrame>(packet, length);
     case 17: // UDP protocol number
-        return nullptr; // std::make_unique<UDPFrame>(packet, length);
+        return std::make_unique<UDPFrame>(packet, length);
     default:
         return nullptr;
     }
