@@ -17,7 +17,7 @@ TCPFrame::TCPFrame(const unsigned char *buf, int length)
     windowSize = (buf[14] << 8) | buf[15];
     checksum = (buf[16] << 8) | buf[17];
     urgentPointer = (buf[18] << 8) | buf[19];
-    nextLayer = next_layer_parse(buf + dataOffset * 4, length - dataOffset * 4, 0);
+    /* nextLayer = next_layer_parse(buf + dataOffset * 4, length - dataOffset * 4, sourcePort, destinationPort); */
 }
 
 TCPFrame::~TCPFrame()
@@ -49,7 +49,8 @@ bsoncxx::builder::basic::document TCPFrame::toBson()
     return doc;
 }
 
-std::unique_ptr<Layer> TCPFrame::next_layer_parse(const unsigned char *packet, int length, int protocol)
+/* TCP reassembly is currently beyond project scope. */
+/* std::unique_ptr<Layer> TCPFrame::next_layer_parse(const unsigned char *packet, int length, uint16_t sport, uint16_t dport)
 {
-    return nullptr; // No further layers for now
-}
+    return nullptr;
+} */

@@ -45,8 +45,8 @@ bsoncxx::builder::basic::document IPV4Frame::toBson()
     bsoncxx::builder::basic::document doc;
     doc.append(bsoncxx::builder::basic::kvp("layerType", "IPv4"));
     doc.append(bsoncxx::builder::basic::kvp("version", version));
-    doc.append(bsoncxx::builder::basic::kvp("ihl", ihl));
-    doc.append(bsoncxx::builder::basic::kvp("dscp", dscp));
+    doc.append(bsoncxx::builder::basic::kvp("ipHeaderLength", ihl));
+    doc.append(bsoncxx::builder::basic::kvp("differentiatedServices", dscp));
     doc.append(bsoncxx::builder::basic::kvp("totalLength", totalLength));
     doc.append(bsoncxx::builder::basic::kvp("identification", identification));
     doc.append(bsoncxx::builder::basic::kvp("flags", flags));

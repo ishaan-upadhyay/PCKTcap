@@ -5,12 +5,15 @@
 #include <unistd.h>
 #include <signal.h>
 #include <stdexcept>
+
 #include <bsoncxx/json.hpp>
 #include <mongocxx/client.hpp>
 #include <mongocxx/instance.hpp>
 #include <mongocxx/uri.hpp>
 
+
 #include "packet-eth.h"
+#include "utils/pcktcap_util.h"
 
 pcap_t *handle;
 
@@ -32,6 +35,7 @@ struct handler_metadata
     pcap_dumper_t *dumper; /* Used for logging to a .pcap file */
     int link_type; /* Used to determine initial parsing strategy. */
     bool verbose; /* Enable verbose mode */
+    bool raw; /* Store raw packet data */
 };
 
 /* Capture exit signal, to gracefully end the pcap_loop. */
@@ -64,7 +68,6 @@ void packet_handler(unsigned char *user_data, const struct pcap_pkthdr *pkthdr, 
 
     if (meta->dumper)
     {
-        std::cout << "Logging packet to file" << std::endl;
         pcap_dump(reinterpret_cast<u_char *>(meta->dumper), pkthdr, packet);
     };
 
@@ -88,6 +91,9 @@ void packet_handler(unsigned char *user_data, const struct pcap_pkthdr *pkthdr, 
             if (meta->verbose)
                 std::cout << bsoncxx::to_json(doc.view()) << std::endl;
 
+            if (meta->raw)
+                doc.append(bsoncxx::builder::basic::kvp("raw", byte_stream_to_byte_string(packet, pkthdr->len)));
+        
             collection.insert_one(doc.view());
         }
     } catch (std::runtime_error &e)
@@ -102,8 +108,9 @@ void print_usage()
     std::cout << "Options:\n";
     std::cout << "  -i <interface>  Interface to capture packets from (default: first available interface)\n";
     std::cout << "  -l <log_file>   Log file to write captured packets to (default: no logging)\n";
-    std::cout << "  -v              Enable verbose mode (parsed packet will be printed out.)\n";
+    std::cout << "  -v              Enable verbose mode, printing out packet headers.\n";
     std::cout << "  -p              Set interface to promiscuous mode\n";
+    std::cout << "  -r              Store raw packet data in database (warning: this will greatly increase storage requirements)\n";
     std::cout << "  -h              Display this help message" << std::endl;
 }
 
@@ -115,9 +122,10 @@ int main(int argc, char *argv[])
     std::string log_file = "";
     bool verbose = false;
     int promisc = 0;
+    bool raw = false;
     int opt;
 
-    while ((opt = getopt(argc, argv, "i:l:vph")) != -1)
+    while ((opt = getopt(argc, argv, "i:l:vprh")) != -1)
     {
         switch (opt)
         {
@@ -132,6 +140,9 @@ int main(int argc, char *argv[])
             break;
         case 'p':
             promisc = 1;
+            break;
+        case 'r':
+            raw = true;
             break;
         case 'h':
             print_usage();
@@ -183,7 +194,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    struct handler_metadata metadata = {dumper, link_type, verbose};
+    struct handler_metadata metadata = {dumper, link_type, verbose, raw};
 
     /* Register signal hander for usual CTRL+C kill. */
     signal(SIGINT, signal_handler);

@@ -24,8 +24,9 @@ class TCPFrame : public Layer
         uint16_t checksum;
         uint16_t urgentPointer;
         bsoncxx::builder::basic::document toBson() override;
-    private:
-        std::unique_ptr<Layer> next_layer_parse(const unsigned char *packet, int length, int protocol);
+    /* TODO: In a future iteration, consider a switch to PcapPlusPlus and reassemble. */
+    /* private:
+        std::unique_ptr<Layer> next_layer_parse(const unsigned char *packet, int length, int protocol); */
 };
 
 #endif // PACKET_TCP_H

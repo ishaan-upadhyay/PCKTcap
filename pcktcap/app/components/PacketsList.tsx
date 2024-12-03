@@ -1,5 +1,6 @@
 import { getPackets } from '@/data/Client';
 import Ethernet from './layers/Ethernet';
+import RawPacket from './RawPacket';
 
 const PacketsList = async ({ capture }: { capture: string }) => {
   const packets = await getPackets(capture);
@@ -12,10 +13,14 @@ const PacketsList = async ({ capture }: { capture: string }) => {
 
   const pckt_list = packets.map((packet, index) => {
     const relativeTime = (packet.timestamp - firstTimestamp) / 1000000; // Convert microseconds to seconds
+    // Spread the packet, _id and raw are not used in the Ethernet component
+    const { _id, raw, ...rest } = packet;
+    
     return (
       <div key={index} className="border border-gray-300 rounded-lg mb-2 p-2 bg-black-100">
         <p>Packet {index + 1}, time: {relativeTime.toFixed(6)} seconds</p>
-        <Ethernet packet={{ ...packet, _id: packet._id.toString() }} />
+        <Ethernet packet={rest} />
+        {raw && <RawPacket raw={raw} />}
       </div>
     );
   });

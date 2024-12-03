@@ -35,6 +35,7 @@ if [ -z "$(which mongod)" ]; then
 
     cd ../..
     rm -rf mongo-cxx-driver-r4.0.0
+    rm mongo-cxx-driver-r4.0.0.tar.gz
 else
     echo "MongoDB is already installed."
 fi

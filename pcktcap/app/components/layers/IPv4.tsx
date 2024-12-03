@@ -7,9 +7,27 @@ const IPv4 = ({ packet }: { packet: any }) => {
   const [isOpen, setIsOpen] = useState(false);
   const toggleOpen = () => setIsOpen(!isOpen);
 
+  const flags = packet.flags;
+  
+  const flagNames: { [key: number]: string } = {
+    0x01: 'Reserved',
+    0x02: 'Don\'t Fragment',
+    0x04: 'More Fragments'
+  };
+  
+  const parsedFlags = Object.keys(flagNames)
+    .filter(flag => flags & parseInt(flag))
+    .map(flag => flagNames[parseInt(flag)]);
+
+  const modifiedPacket = { 
+    ...packet, 
+    flags: parsedFlags,
+    ipHeaderLength: `${packet.ipHeaderLength} (${packet.ipHeaderLength * 4} bytes)`
+  };
+
   // Decompose the packet into itself and nextLayer,
   // so nextLayer isn't displayed at this layer
-  const { nextLayer, ...restPacket } = packet;
+  const { nextLayer, ...restPacket } = modifiedPacket;
 
   // Decompose nextLayer into layerType (rename to nextLayerType)
   // and restNextLayer.
@@ -22,13 +40,12 @@ const IPv4 = ({ packet }: { packet: any }) => {
       case 'ICMP':
         NextLayerComponent = ICMP;
         break;
-      case 'UDP': // Add this case
+      case 'UDP':
         NextLayerComponent = UDP;
         break;
-      case 'TCP': // Add this case
+      case 'TCP':
         NextLayerComponent = TCP;
         break;
-      // ...existing code...
     }
   }
 

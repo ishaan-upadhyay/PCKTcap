@@ -4,12 +4,18 @@
 #include <iostream>
 #include <iomanip>
 
-/* Print a byte stream, given the stream and its length. */
-inline void print_byte_stream(unsigned char *packet, int length) {
+/* Convert a stream of bytes to a string (hexadecimal representation). */
+inline std::string byte_stream_to_byte_string(const unsigned char *packet, int length) {
+    std::stringstream rep;
     for (int i = 0; i < length; ++i) {
-        printf("%02x ", packet[i]);
+        if (i != 0) {
+            rep << " ";
+        }
+        rep << "0x";
+        rep << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(packet[i]);
     }
-    std::cout << std::endl;
+
+    return rep.str();
 }
 
 /* Helper function to convert a byte stream to a MAC address string. */
