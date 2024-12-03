@@ -1,5 +1,5 @@
 import { getCollections } from "../../data/Client";
-import { formatDate } from "../utils/formatDate";
+import { formatCollectionName } from "../utils/formatCollectionName";
 
 const CollectionsList = async () => {
   const collections = await getCollections();
@@ -13,7 +13,7 @@ const CollectionsList = async () => {
       {collections.map((collection) => (
         <li key={collection} className="mb-2">
           <a href={`/${collection}`} className="text-blue-500 hover:underline">
-            {formatDate(collection)}
+            {formatCollectionName(collection)}
           </a>
         </li>
       ))}

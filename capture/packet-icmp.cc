@@ -1,5 +1,5 @@
 #include "packet-icmp.h"
-#include "../utils/pcktcap_util.h"
+#include "utils/pcktcap_util.h"
 
 ICMPFrame::ICMPFrame(const unsigned char *buf, int length)
 {

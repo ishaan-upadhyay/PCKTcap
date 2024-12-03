@@ -14,7 +14,7 @@ const PacketsList = async ({ capture }: { capture: string }) => {
     const relativeTime = (packet.timestamp - firstTimestamp) / 1000000; // Convert microseconds to seconds
     return (
       <div key={index} className="border border-gray-300 rounded-lg mb-2 p-2 bg-black-100">
-        <p>Packet {index}, time: {relativeTime.toFixed(6)} seconds</p>
+        <p>Packet {index + 1}, time: {relativeTime.toFixed(6)} seconds</p>
         <Ethernet packet={{ ...packet, _id: packet._id.toString() }} />
       </div>
     );

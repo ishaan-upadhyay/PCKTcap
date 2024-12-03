@@ -1,6 +1,6 @@
 #include "packet-udp.h"
 #include "packet-dns.h"
-#include "../utils/pcktcap_util.h"
+#include "utils/pcktcap_util.h"
 
 UDPFrame::UDPFrame(const unsigned char *buf, int length)
 {

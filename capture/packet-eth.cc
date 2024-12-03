@@ -5,7 +5,7 @@
 #include "packet-ipv4.h"
 #include "packet-arp.h"
 #include "packet-eth.h"
-#include "../utils/pcktcap_util.h"
+#include "utils/pcktcap_util.h"
 #include <bsoncxx/builder/basic/kvp.hpp>   
 
 EthernetFrame::EthernetFrame(const unsigned char *buf, const struct pcap_pkthdr *header)

@@ -23,9 +23,8 @@ mongocxx::client client(uri);
 
 auto database = client["PCKTcap"];
 
-/* Set up new collection based on timestamp. */
-time_t now = time(NULL);
-auto collection = database["cap_" + std::to_string(now)];
+/* Forward declare the collection. */
+mongocxx::v_noabi::collection collection;
 
 /* Structure to pass around required metadata for the packet handler */
 struct handler_metadata
@@ -65,6 +64,7 @@ void packet_handler(unsigned char *user_data, const struct pcap_pkthdr *pkthdr, 
 
     if (meta->dumper)
     {
+        std::cout << "Logging packet to file" << std::endl;
         pcap_dump(reinterpret_cast<u_char *>(meta->dumper), pkthdr, packet);
     };
 
@@ -98,7 +98,7 @@ void packet_handler(unsigned char *user_data, const struct pcap_pkthdr *pkthdr, 
 
 void print_usage()
 {
-    std::cout << "Usage: capture [-i <interface>] [-l <log_file>] [-h]\n";
+    std::cout << "Usage: capture [-i <interface>] [-l <log_file>] [-h] [-v] [-p]\n";
     std::cout << "Options:\n";
     std::cout << "  -i <interface>  Interface to capture packets from (default: first available interface)\n";
     std::cout << "  -l <log_file>   Log file to write captured packets to (default: no logging)\n";
@@ -117,7 +117,7 @@ int main(int argc, char *argv[])
     int promisc = 0;
     int opt;
 
-    while ((opt = getopt(argc, argv, "i:l:h:v")) != -1)
+    while ((opt = getopt(argc, argv, "i:l:vph")) != -1)
     {
         switch (opt)
         {
@@ -127,20 +127,22 @@ int main(int argc, char *argv[])
         case 'l':
             log_file = optarg;
             break;
-        case 'h':
-            print_usage();
-            return 0;
         case 'v':
             verbose = true;
             break;
         case 'p':
             promisc = 1;
             break;
+        case 'h':
+            print_usage();
+            return 0;
         default:
             print_usage();
             return 1;
         }
     }
+
+    std::cout << "Logging to file: " << log_file << std::endl;
 
     if (interface.empty())
     {
@@ -159,6 +161,12 @@ int main(int argc, char *argv[])
         std::cerr << "Couldn't open device " << interface << ": " << errbuf << std::endl;
         return 1;
     }
+
+    std::cout << "Capturing on interface " << interface << std::endl;
+
+    /* Create a new collection for the current capture session. */
+    time_t now = time(0);
+    collection = database["cap_" + std::to_string(now) + "_" + interface];
 
     /* The link layer header type. */
     int link_type = pcap_datalink(handle);
@@ -184,6 +192,7 @@ int main(int argc, char *argv[])
     /* Clean up. */
     if (dumper)
     {
+        std::cout << "Closing dump file" << std::endl;
         pcap_dump_close(dumper);
     }
     pcap_close(handle);

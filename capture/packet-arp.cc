@@ -2,7 +2,7 @@
 #include <stdexcept>
 
 #include "packet-arp.h"
-#include "../utils/pcktcap_util.h"
+#include "utils/pcktcap_util.h"
 #include <bsoncxx/json.hpp>
 
 ARPFrame::ARPFrame(const unsigned char *buf, int length)

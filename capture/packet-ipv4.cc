@@ -1,5 +1,5 @@
 #include "packet-ipv4.h"
-#include "../utils/pcktcap_util.h"
+#include "utils/pcktcap_util.h"
 #include "packet-tcp.h"
 #include "packet-udp.h"
 #include "packet-icmp.h"
