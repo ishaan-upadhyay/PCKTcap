@@ -23,7 +23,7 @@ const ARP = ({ packet }: { packet: any }) => {
     ...packet,
     hardwareType: `${packet.hardwareType} (${hardwareTypes[packet.hardwareType] || 'Unknown'})`,
     protocolType: `${packet.protocolType} (${protocolTypes[packet.protocolType] || 'Unknown'})`,
-    opcode: `${packet.opcode} (${opcodes[packet.opcode] || 'Unknown'})`
+    operation: `${packet.operation} (${opcodes[packet.operation] || 'Unknown'})`
   };
 
   return (
