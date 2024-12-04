@@ -45,7 +45,7 @@ Run `./PCKTcap -h` to see the available options.
 
 PCKTcap requires root privileges to run when actually capturing packets, so you will need to run it with `sudo`. It can be stopped using `Ctrl+C`.
 
-While a capture is ongoing, you can navigate to `http://localhost:3000` in the browser to view it, and previous captures. Alternatively, to view past captures, run the following
+Once done, you can navigate to `http://localhost:3000` in the browser to view it, and previous captures. To view the captures, you will need to run the web server, as done below.
 
 ```bash
 cd pcktcap
