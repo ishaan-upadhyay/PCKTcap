@@ -35,6 +35,25 @@ We assume a plain MongoDB installation accessible at the default port (`27017`) 
 
 To check the MongoDB port number, run `sudo systemctl start mongod`, then `mongosh` and `db.getMongo()`. The URL returned will be formatted as `mongodb://<IP>:<PORT>`. To use a different port, edit `capture/main.cc` and change the `DB_URL` constant. 
 
+## WebUI
+
+```bash
+To install node.js, run the following commands.
+
+# installs nvm (Node Version Manager)
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash
+
+# download and install Node.js (you may need to restart the terminal)
+nvm install 22
+```
+
+Run the following to install the necessary dependencies for the web UI.
+
+```bash
+cd pcktcap
+npm install
+```
+
 # Building
 
 Run `make` from the root of the repository to build the project.
@@ -76,3 +95,11 @@ Restart the capture/web server after starting the `mongod` service.
 This is likely due to an extension interfering with the rendering of the UI. Try reopening the web UI in an incognito window or disabling extensions.
 
 This will not affect the functionality of the web UI, it is simply an internal issue which is handled gracefully.
+
+### Importing the VM results in NS_ERROR_INVALID_ARG (or other errors)
+
+Make sure to remove any existing VMs based on the Mininet VM provided for Assignment 3 from the VirtualBox UI. This is likely due to some sort of conflict with an existing VM (the import was tested and worked on a fresh VirtualBox with the UofT lab machines).
+
+### Starting the VM results in an error due to network adapter names
+
+If the issue relates to the Network Adapter not being found (since, on Linux the Host-Only Adaptor, it defaults to `vbnoxnet0` which is distinct from Windows), open the VM in the UI. Click on the `(Host-Only Adapter, <name>)`, temporarily switch the `Attached to:` field to a non-Host-Only Adapter, then switch it back to `Host-Only Adapter`. This should resolve the issue.
