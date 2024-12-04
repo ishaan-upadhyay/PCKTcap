@@ -7,7 +7,7 @@ With some simplifying assumptions being made (Ethernet II frames, 1500 byte MTU,
 
 **Note:** It is recommended to use the provided VM which is fully set up for this project, since the setup can be tedious. Please run `git pull` in the `~/PCKTcap` directory in the VM to ensure you have the latest version of the project. *The VM has been tested on University of Toronto lab machines.*
 
-The VM is available in the release section of the repository and is intended to be used with VirtualBox. It is an updated version of the VM provided by Professor Marcelo Ponce for Assignment 3. For graders, if any issues arise, please refer to the fixes provided in the appendix of the assignment first to see if they apply to the VM. Other bugs are discussed at the end of this README.
+The VM is available from the link in our submission and is intended to be used with VirtualBox. It is an updated version of the VM provided by Professor Marcelo Ponce for Assignment 3. For graders, if any issues arise, please refer to the fixes provided in the appendix of the assignment first to see if they apply to the VM. Other bugs are discussed at the end of this README.
 
 **The VM will NOT run on Windows if Hyper-V Virtualization is enabled**, as MongoDB > 5.0 requires the AVX instruction set, which is not compatible with Hyper-V. 
 
@@ -37,9 +37,9 @@ To check the MongoDB port number, run `sudo systemctl start mongod`, then `mongo
 
 ## WebUI
 
-```bash
 To install node.js, run the following commands.
 
+```bash
 # installs nvm (Node Version Manager)
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash
 
