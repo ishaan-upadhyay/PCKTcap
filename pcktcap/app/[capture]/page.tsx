@@ -2,7 +2,7 @@ import PacketsList from '../components/PacketsList';
 import { formatCollectionName } from '../utils/formatCollectionName';
 
 interface CapturePageProps {
-  params: { capture: string };
+  params: Promise<{ capture: string }>;
 }
 
 export default async function CapturePage({ params }: CapturePageProps) {
